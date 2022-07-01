@@ -5,10 +5,11 @@ package pb;
 option go_package = "/pb";
 
 message Asset {
-  string Address = 1;
-  float  Value = 2;
-  string Name = 3;
-  string Blockchain = 4;
+  string Id = 1;
+  string Address = 2;
+  float  Value = 3;
+  string Name = 4;
+  string Blockchain = 5;
 }
 
 message AssetResultStream {
