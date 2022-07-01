@@ -3,6 +3,7 @@ package reposiroty
 import (
 	"cryptocurrencies-service/db"
 	"cryptocurrencies-service/model"
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -25,6 +26,7 @@ func NewAssetRepository(conn db.Connection) AssetRepositoryInterface {
 }
 
 func (r *assetRepository) Insert(asset *model.Asset) error {
+	fmt.Println("ASSET", asset)
 	return r.c.Insert(asset)
 }
 

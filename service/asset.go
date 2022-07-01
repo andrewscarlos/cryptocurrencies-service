@@ -22,17 +22,19 @@ func NewAssetService(assetRepository reposiroty.AssetRepositoryInterface) *Asset
 
 func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
 	var assetModel model.Asset
-	if req.Id != "" {
-		req.Id = bson.NewObjectId().String()
-	}
-	assetModel.Id = bson.ObjectId(req.GetId())
+	//if req.Id != "" {
+	//	req.Id = bson.NewObjectId().String()
+	//}
+	assetModel.Id = bson.NewObjectId()
 	assetModel.Name = req.GetName()
 	assetModel.Address = req.GetAddress()
 	assetModel.Blockchain = req.GetBlockchain()
-	assetModel.Value = float64(req.GetValue())
+	assetModel.Value = float32(req.GetValue())
 
-	s.assetRepository.Insert(&assetModel)
-
+	err := s.assetRepository.Insert(&assetModel)
+	if err != nil {
+		log.Fatalf("Could not Insert request: %v", err)
+	}
 	return &pb.Asset{
 		Id:         req.GetId(),
 		Address:    req.GetAddress(),
