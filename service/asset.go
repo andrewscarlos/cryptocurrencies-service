@@ -22,9 +22,6 @@ func NewAssetService(assetRepository reposiroty.AssetRepositoryInterface) *Asset
 
 func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
 	var assetModel model.Asset
-	//if req.Id != "" {
-	//	req.Id = bson.NewObjectId().String()
-	//}
 	assetModel.Id = bson.NewObjectId()
 	assetModel.Name = req.GetName()
 	assetModel.Address = req.GetAddress()
