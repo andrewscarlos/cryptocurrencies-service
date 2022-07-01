@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "/pb";
+
+message Asset {
+  string Address = 1;
+  float  Value = 2;
+  string Name = 3;
+  string Blockchain = 4;
+}
+
+message AssetResultStream {
+  string status = 1;
+  Asset asset = 2;
+}
+
+message Assets {
+  repeated Asset asset = 1;
+}
+message ID{
+  string id = 1;
+}
+
+service AssetService {
+  rpc Insert(Asset) returns (Asset){};
+  rpc Read(ID) returns (Asset){}
+  rpc Delete(ID) returns (ID){}
+  rpc Update(Asset) returns (Asset){}
+}
+
