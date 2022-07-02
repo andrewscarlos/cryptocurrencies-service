@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"cryptocurrencies-service/entity"
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
@@ -22,11 +23,12 @@ type AssetService struct {
 
 func NewAssetService(assetRepository repository.AssetRepositoryInterface) *AssetService {
 	return &AssetService{
+
 		AssetRepository: assetRepository,
 	}
 }
 
-func (s *AssetService) Insert(req *pb.Asset) (*pb.Asset, error) {
+func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
 	var assetModel entity.Asset
 	assetModel.Id = bson.NewObjectId()
 	assetModel.Name = req.GetName()
@@ -49,7 +51,7 @@ func (s *AssetService) Insert(req *pb.Asset) (*pb.Asset, error) {
 	}, nil
 }
 
-func (s *AssetService) Read(req *pb.ID) (*pb.Asset, error) {
+func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) {
 	result, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
 		log.Fatal(err)
@@ -64,7 +66,7 @@ func (s *AssetService) Read(req *pb.ID) (*pb.Asset, error) {
 
 }
 
-func (s *AssetService) Delete(req *pb.ID) (*pb.ID, error) {
+func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
 	err := s.AssetRepository.Delete(req.Id)
 	if err != nil {
 		log.Fatal(err)
@@ -74,7 +76,7 @@ func (s *AssetService) Delete(req *pb.ID) (*pb.ID, error) {
 	}, nil
 }
 
-func (s *AssetService) Update(req *pb.Asset) (*pb.Asset, error) {
+func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
 	var assetModel entity.Asset
 	asset, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
