@@ -2,26 +2,33 @@ package service
 
 import (
 	"context"
-	"cryptocurrencies-service/model"
+	"cryptocurrencies-service/entity"
 	"cryptocurrencies-service/pb"
-	"cryptocurrencies-service/reposiroty"
+	"cryptocurrencies-service/repository"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 )
 
-type AssetService struct {
-	pb.UnimplementedAssetServiceServer
-	assetRepository reposiroty.AssetRepositoryInterface
+type AssetServiceInterface interface {
+	Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, error)
+	Read(ctx context.Context, req *pb.ID) (*pb.Asset, error)
+	Delete(ctx context.Context, req *pb.ID) (*pb.ID, error)
+	Update(ctx context.Context, req *pb.Asset) (*pb.Asset, error)
 }
 
-func NewAssetService(assetRepository reposiroty.AssetRepositoryInterface) *AssetService {
+type AssetService struct {
+	pb.UnimplementedAssetServiceServer
+	assetRepository repository.AssetRepositoryInterface
+}
+
+func NewAssetService(assetRepository repository.AssetRepositoryInterface) *AssetService {
 	return &AssetService{
 		assetRepository: assetRepository,
 	}
 }
 
 func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
-	var assetModel model.Asset
+	var assetModel entity.Asset
 	assetModel.Id = bson.NewObjectId()
 	assetModel.Name = req.GetName()
 	assetModel.Address = req.GetAddress()
@@ -30,8 +37,10 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 
 	err := s.assetRepository.Insert(&assetModel)
 	if err != nil {
-		log.Fatalf("Could not Insert request: %v", err)
+		return nil, err
+		//log.Fatalf("Could not Insert request: %v", err)
 	}
+	//TODO validate request body fields
 	return &pb.Asset{
 		Id:         req.GetId(),
 		Address:    req.GetAddress(),
@@ -67,7 +76,7 @@ func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
 }
 
 func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
-	var assetModel model.Asset
+	var assetModel entity.Asset
 	asset, err := s.assetRepository.Read(req.GetId())
 	if err != nil {
 		log.Fatal(err)
