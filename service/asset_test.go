@@ -11,14 +11,26 @@ import (
 func TestAssetService_Insert(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	var req pb.Asset
+	var req pb.CreateAsset
+	var res pb.Asset
+
+	req.Value = 1.0
+	req.Name = "foo"
+	req.Address = "bar"
+	req.Blockchain = "baz"
+
+	res.Id = "62bf4284956789b5c6ea0edb"
+	res.Value = 1.0
+	res.Name = "foo"
+	res.Address = "bar"
+	res.Blockchain = "baz"
 
 	services := mock_service.NewMockAssetServiceInterface(ctrl)
-	services.EXPECT().Insert(gomock.Any()).Return(&req, nil)
+	services.EXPECT().Insert(gomock.Any()).Return(&res, nil)
 
 	result, err := services.Insert(&req)
 	require.Nil(t, err)
-	require.Equal(t, &req, result)
+	require.Equal(t, &res, result)
 }
 
 func TestAssetService_Delete(t *testing.T) {

@@ -50,7 +50,7 @@ func (mr *MockAssetServiceInterfaceMockRecorder) Delete(req interface{}) *gomock
 }
 
 // Insert mocks base method.
-func (m *MockAssetServiceInterface) Insert(req *pb.Asset) (*pb.Asset, error) {
+func (m *MockAssetServiceInterface) Insert(req *pb.CreateAsset) (*pb.Asset, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", req)
 	ret0, _ := ret[0].(*pb.Asset)

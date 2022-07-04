@@ -10,7 +10,7 @@ import (
 )
 
 type AssetServiceInterface interface {
-	Insert(req *pb.Asset) (*pb.Asset, error)
+	Insert(req *pb.CreateAsset) (*pb.Asset, error)
 	Read(req *pb.ID) (*pb.Asset, error)
 	Delete(req *pb.ID) (*pb.ID, error)
 	Update(req *pb.Asset) (*pb.Asset, error)
