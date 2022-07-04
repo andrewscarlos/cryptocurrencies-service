@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.6.1
-// source: proto/asset.proto
+// source: asset.proto
 
 package pb
 
@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AssetServiceClient interface {
-	Insert(ctx context.Context, in *Asset, opts ...grpc.CallOption) (*Asset, error)
+	Insert(ctx context.Context, in *CreateAsset, opts ...grpc.CallOption) (*Asset, error)
 	Read(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Asset, error)
 	Delete(ctx context.Context, in *ID, opts ...grpc.CallOption) (*ID, error)
 	Update(ctx context.Context, in *Asset, opts ...grpc.CallOption) (*Asset, error)
@@ -36,7 +36,7 @@ func NewAssetServiceClient(cc grpc.ClientConnInterface) AssetServiceClient {
 	return &assetServiceClient{cc}
 }
 
-func (c *assetServiceClient) Insert(ctx context.Context, in *Asset, opts ...grpc.CallOption) (*Asset, error) {
+func (c *assetServiceClient) Insert(ctx context.Context, in *CreateAsset, opts ...grpc.CallOption) (*Asset, error) {
 	out := new(Asset)
 	err := c.cc.Invoke(ctx, "/pb.AssetService/Insert", in, out, opts...)
 	if err != nil {
@@ -76,7 +76,7 @@ func (c *assetServiceClient) Update(ctx context.Context, in *Asset, opts ...grpc
 // All implementations must embed UnimplementedAssetServiceServer
 // for forward compatibility
 type AssetServiceServer interface {
-	Insert(context.Context, *Asset) (*Asset, error)
+	Insert(context.Context, *CreateAsset) (*Asset, error)
 	Read(context.Context, *ID) (*Asset, error)
 	Delete(context.Context, *ID) (*ID, error)
 	Update(context.Context, *Asset) (*Asset, error)
@@ -87,7 +87,7 @@ type AssetServiceServer interface {
 type UnimplementedAssetServiceServer struct {
 }
 
-func (UnimplementedAssetServiceServer) Insert(context.Context, *Asset) (*Asset, error) {
+func (UnimplementedAssetServiceServer) Insert(context.Context, *CreateAsset) (*Asset, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Insert not implemented")
 }
 func (UnimplementedAssetServiceServer) Read(context.Context, *ID) (*Asset, error) {
@@ -113,7 +113,7 @@ func RegisterAssetServiceServer(s grpc.ServiceRegistrar, srv AssetServiceServer)
 }
 
 func _AssetService_Insert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Asset)
+	in := new(CreateAsset)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func _AssetService_Insert_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/pb.AssetService/Insert",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AssetServiceServer).Insert(ctx, req.(*Asset))
+		return srv.(AssetServiceServer).Insert(ctx, req.(*CreateAsset))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -209,5 +209,5 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/asset.proto",
+	Metadata: "asset.proto",
 }

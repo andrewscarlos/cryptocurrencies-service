@@ -5,6 +5,7 @@ import (
 	"cryptocurrencies-service/entity"
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
+	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 )
@@ -28,7 +29,7 @@ func NewAssetService(assetRepository repository.AssetRepositoryInterface) *Asset
 	}
 }
 
-func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
+func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Asset, error) {
 	var assetModel entity.Asset
 	assetModel.Id = bson.NewObjectId()
 	assetModel.Name = req.GetName()
@@ -43,21 +44,22 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	}
 	//TODO validate request body fields
 	return &pb.Asset{
-		Id:         req.GetId(),
-		Address:    req.GetAddress(),
-		Value:      req.GetValue(),
-		Name:       req.GetName(),
-		Blockchain: req.GetBlockchain(),
+		Id:         assetModel.Id.Hex(),
+		Address:    assetModel.Address,
+		Value:      assetModel.Value,
+		Name:       assetModel.Name,
+		Blockchain: assetModel.Blockchain,
 	}, nil
 }
 
 func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) {
 	result, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
+	fmt.Println("result", result)
 	return &pb.Asset{
-		Id:         string(result.Id),
+		Id:         result.Id.Hex(),
 		Address:    result.Address,
 		Value:      float32(result.Value),
 		Name:       result.Name,
@@ -77,25 +79,26 @@ func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
 }
 
 func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
-	var assetModel entity.Asset
+
 	asset, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
 		log.Fatal(err)
 	}
-	assetModel.Id = asset.Id
-	assetModel.Address = asset.Address
-	assetModel.Value = asset.Value
-	assetModel.Name = asset.Name
-	assetModel.Blockchain = asset.Blockchain
-	err = s.AssetRepository.Update(&assetModel)
+
+	asset.Id = bson.ObjectIdHex(req.GetId())
+	asset.Address = req.GetAddress()
+	asset.Value = req.GetValue()
+	asset.Name = req.GetName()
+	asset.Blockchain = req.GetBlockchain()
+	err = s.AssetRepository.Update(asset)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return &pb.Asset{
-		Id:         string(assetModel.Id),
-		Address:    assetModel.Address,
-		Value:      float32(assetModel.Value),
-		Name:       assetModel.Name,
-		Blockchain: assetModel.Blockchain,
+		Id:         asset.Id.Hex(),
+		Address:    asset.Address,
+		Value:      float32(asset.Value),
+		Name:       asset.Name,
+		Blockchain: asset.Blockchain,
 	}, nil
 }

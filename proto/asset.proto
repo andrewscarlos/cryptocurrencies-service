@@ -2,10 +2,17 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "/pb";
+option go_package = ".;pb";
 
 message Asset {
   string Id = 1;
+  string Address = 2;
+  float  Value = 3;
+  string Name = 4;
+  string Blockchain = 5;
+}
+
+message CreateAsset{
   string Address = 2;
   float  Value = 3;
   string Name = 4;
@@ -25,7 +32,7 @@ message ID{
 }
 
 service AssetService {
-  rpc Insert(Asset) returns (Asset){};
+  rpc Insert(CreateAsset) returns (Asset){};
   rpc Read(ID) returns (Asset){}
   rpc Delete(ID) returns (ID){}
   rpc Update(Asset) returns (Asset){}
