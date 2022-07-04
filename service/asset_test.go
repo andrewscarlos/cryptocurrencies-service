@@ -3,6 +3,7 @@ package service_test
 import (
 	"cryptocurrencies-service/pb"
 	mock_service "cryptocurrencies-service/service/mocks"
+	"cryptocurrencies-service/util"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -31,6 +32,17 @@ func TestAssetService_Insert(t *testing.T) {
 	result, err := services.Insert(&req)
 	require.Nil(t, err)
 	require.Equal(t, &res, result)
+}
+
+func TestAssetService_Insert_WhenReturnError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	var res pb.Asset
+	var req pb.CreateAsset
+	services := mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Insert(gomock.Any()).Return(&res, util.ErrCreateFailed)
+	_, err := services.Insert(&req)
+	require.Equal(t, "asset created failed", err.Error())
 }
 
 func TestAssetService_Delete(t *testing.T) {
