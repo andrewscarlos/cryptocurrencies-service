@@ -5,9 +5,8 @@ import (
 	"cryptocurrencies-service/entity"
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
-	"fmt"
+	"cryptocurrencies-service/util"
 	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
 type AssetServiceInterface interface {
@@ -39,10 +38,8 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Ass
 
 	err := s.AssetRepository.Insert(&assetModel)
 	if err != nil {
-		return nil, err
-		//log.Fatalf("Could not Insert request: %v", err)
+		return nil, util.ErrCreateFailed
 	}
-	//TODO validate request body fields
 	return &pb.Asset{
 		Id:         assetModel.Id.Hex(),
 		Address:    assetModel.Address,
@@ -53,11 +50,14 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Ass
 }
 
 func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) {
+	IsObjectIdHex := bson.IsObjectIdHex(req.GetId())
+	if IsObjectIdHex == false {
+		return nil, util.ErrInvalidObjectId
+	}
 	result, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
-		return nil, err
+		return nil, util.ErrNotFound
 	}
-	fmt.Println("result", result)
 	return &pb.Asset{
 		Id:         result.Id.Hex(),
 		Address:    result.Address,
@@ -69,9 +69,13 @@ func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) 
 }
 
 func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
+	IsObjectIdHex := bson.IsObjectIdHex(req.GetId())
+	if IsObjectIdHex == false {
+		return nil, util.ErrInvalidObjectId
+	}
 	err := s.AssetRepository.Delete(req.Id)
 	if err != nil {
-		log.Fatal(err)
+		return nil, util.ErrDeleteFailed
 	}
 	return &pb.ID{
 		Id: req.GetId(),
@@ -79,10 +83,13 @@ func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
 }
 
 func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, error) {
-
+	IsObjectIdHex := bson.IsObjectIdHex(req.GetId())
+	if IsObjectIdHex == false {
+		return nil, util.ErrInvalidObjectId
+	}
 	asset, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
-		log.Fatal(err)
+		return nil, util.ErrNotFound
 	}
 
 	asset.Id = bson.ObjectIdHex(req.GetId())
@@ -92,7 +99,7 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	asset.Blockchain = req.GetBlockchain()
 	err = s.AssetRepository.Update(asset)
 	if err != nil {
-		log.Fatal(err)
+		return nil, util.ErrUpdateFailed
 	}
 	return &pb.Asset{
 		Id:         asset.Id.Hex(),

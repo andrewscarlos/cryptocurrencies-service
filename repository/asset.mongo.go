@@ -23,6 +23,7 @@ func (r *AssetRepository) Insert(asset *entity.Asset) error {
 
 func (r *AssetRepository) Read(id string) (asset *entity.Asset, err error) {
 	err = r.c.FindId(bson.ObjectIdHex(id)).One(&asset)
+	println("error mongo ", err)
 	return asset, err
 }
 
