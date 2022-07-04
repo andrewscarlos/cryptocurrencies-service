@@ -8,5 +8,5 @@ var (
 	ErrUpdateFailed    = errors.New("asset updated failed")
 	ErrDeleteFailed    = errors.New("asset deleted failed")
 	ErrUnauthorized    = errors.New("Unauthorized")
-	ErrInvalidObjectId = errors.New("Invalid ObjectId")
+	ErrInvalidObjectId = errors.New("invalid objectId")
 )

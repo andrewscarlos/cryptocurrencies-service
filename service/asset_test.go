@@ -45,17 +45,27 @@ func TestAssetService_Insert_WhenReturnError(t *testing.T) {
 	require.Equal(t, "asset created failed", err.Error())
 }
 
-func TestAssetService_Delete(t *testing.T) {
+func TestAssetService_Delete_AllCases(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	var id pb.ID
 
 	services := mock_service.NewMockAssetServiceInterface(ctrl)
 	services.EXPECT().Delete(gomock.Any()).Return(&id, nil)
-
 	result, err := services.Delete(&id)
 	require.Nil(t, err)
 	require.Equal(t, &id, result)
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Delete(gomock.Any()).Return(nil, util.ErrInvalidObjectId)
+	_, err = services.Delete(&id)
+	require.Equal(t, "invalid objectId", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Delete(gomock.Any()).Return(nil, util.ErrDeleteFailed)
+	_, err = services.Delete(&id)
+	require.Equal(t, "asset deleted failed", err.Error())
+
 }
 
 func TestAssetService_Read(t *testing.T) {
