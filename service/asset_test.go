@@ -98,10 +98,27 @@ func TestAssetService_Update(t *testing.T) {
 	defer ctrl.Finish()
 	var req pb.Asset
 
+	req.Id = "62bf4284956789b5c6ea0edb"
+	req.Name = "foo_updated"
+	req.Address = "bar_updated"
+	req.Blockchain = "baz_updated"
+	req.Value = 2.0
+
 	services := mock_service.NewMockAssetServiceInterface(ctrl)
 	services.EXPECT().Update(gomock.Any()).Return(&req, nil)
 
 	result, err := services.Update(&req)
 	require.Nil(t, err)
 	require.Equal(t, &req, result)
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Update(gomock.Any()).Return(nil, util.ErrInvalidObjectId)
+	_, err = services.Update(&req)
+	require.Equal(t, "invalid objectId", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Update(gomock.Any()).Return(nil, util.ErrNotFound)
+	_, err = services.Update(&req)
+	require.Equal(t, "asset not found", err.Error())
+
 }
