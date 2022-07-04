@@ -80,6 +80,17 @@ func TestAssetService_Read(t *testing.T) {
 	result, err := services.Read(&id)
 	require.Nil(t, err)
 	require.Equal(t, &asset, result)
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Read(gomock.Any()).Return(nil, util.ErrInvalidObjectId)
+	_, err = services.Read(&id)
+	require.Equal(t, "invalid objectId", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Read(gomock.Any()).Return(nil, util.ErrNotFound)
+	_, err = services.Read(&id)
+	require.Equal(t, "asset not found", err.Error())
+
 }
 
 func TestAssetService_Update(t *testing.T) {
