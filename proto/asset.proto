@@ -19,10 +19,6 @@ message CreateAsset{
   string Blockchain = 5;
 }
 
-message AssetResultStream {
-  string status = 1;
-  Asset asset = 2;
-}
 
 message Assets {
   repeated Asset asset = 1;
@@ -31,6 +27,8 @@ message Assets {
 message ID {
   string id = 1;
 }
+
+
 
 service AssetService {
   rpc Insert(CreateAsset) returns (Asset){};
