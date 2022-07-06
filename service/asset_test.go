@@ -15,13 +15,13 @@ func TestAssetServiceInsert(t *testing.T) {
 	var req pb.CreateAsset
 	var res pb.Asset
 
-	req.Value = 1.0
+	req.Amount = 1.0
 	req.Name = "foo"
 	req.Address = "bar"
 	req.Blockchain = "baz"
 
 	res.Id = "62bf4284956789b5c6ea0edb"
-	res.Value = 1.0
+	res.Amount = 1.0
 	res.Name = "foo"
 	res.Address = "bar"
 	res.Blockchain = "baz"
@@ -109,7 +109,7 @@ func TestAssetServiceUpdate(t *testing.T) {
 	req.Name = "foo_updated"
 	req.Address = "bar_updated"
 	req.Blockchain = "baz_updated"
-	req.Value = 2.0
+	req.Amount = 2.0
 
 	services := mock_service.NewMockAssetServiceInterface(ctrl)
 	services.EXPECT().Update(gomock.Any()).Return(&req, nil)
