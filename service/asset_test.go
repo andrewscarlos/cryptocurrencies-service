@@ -48,7 +48,7 @@ func TestAssetServiceInsertWhenReturnError(t *testing.T) {
 	services.EXPECT().Insert(gomock.Any()).Return(&res, util.ErrEmptyInput)
 
 	_, err = services.Insert(&req)
-	require.Equal(t, "empty input", err.Error())
+	require.Equal(t, "empty input name or blockchain or amount or address", err.Error())
 
 }
 
@@ -131,6 +131,6 @@ func TestAssetServiceUpdate(t *testing.T) {
 	services = mock_service.NewMockAssetServiceInterface(ctrl)
 	services.EXPECT().Update(gomock.Any()).Return(nil, util.ErrEmptyInput)
 	_, err = services.Update(&req)
-	require.Equal(t, "empty input", err.Error())
+	require.Equal(t, "empty input name or blockchain or amount or address", err.Error())
 
 }
