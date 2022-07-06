@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-
 func TestAssetServiceInsert(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -44,6 +43,13 @@ func TestAssetServiceInsertWhenReturnError(t *testing.T) {
 	services.EXPECT().Insert(gomock.Any()).Return(&res, util.ErrCreateFailed)
 	_, err := services.Insert(&req)
 	require.Equal(t, "asset created failed", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Insert(gomock.Any()).Return(&res, util.ErrEmptyInput)
+
+	_, err = services.Insert(&req)
+	require.Equal(t, "empty input", err.Error())
+
 }
 
 func TestAssetServiceDeleteAllCases(t *testing.T) {
@@ -121,5 +127,10 @@ func TestAssetServiceUpdate(t *testing.T) {
 	services.EXPECT().Update(gomock.Any()).Return(nil, util.ErrNotFound)
 	_, err = services.Update(&req)
 	require.Equal(t, "asset not found", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().Update(gomock.Any()).Return(nil, util.ErrEmptyInput)
+	_, err = services.Update(&req)
+	require.Equal(t, "empty input", err.Error())
 
 }
