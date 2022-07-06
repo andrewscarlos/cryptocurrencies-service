@@ -36,6 +36,11 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Ass
 	assetModel.Blockchain = req.GetBlockchain()
 	assetModel.Value = float32(req.GetValue())
 
+	errInputValidate := validateInputCreate(req)
+	if errInputValidate != nil {
+		return nil, errInputValidate
+	}
+
 	err := s.AssetRepository.Insert(&assetModel)
 	if err != nil {
 		return nil, util.ErrCreateFailed
@@ -87,7 +92,7 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	if IsObjectIdHex == false {
 		return nil, util.ErrInvalidObjectId
 	}
-	errInputValidate := validateInput(req)
+	errInputValidate := validateInputUpdate(req)
 	if errInputValidate != nil {
 		return nil, errInputValidate
 	}
@@ -115,7 +120,14 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	}, nil
 }
 
-func validateInput(req *pb.Asset) error {
+func validateInputUpdate(req *pb.Asset) error {
+	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetValue() == 0 {
+		return util.ErrEmptyInput
+	}
+	return nil
+}
+
+func validateInputCreate(req *pb.CreateAsset) error {
 	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetValue() == 0 {
 		return util.ErrEmptyInput
 	}
