@@ -12,6 +12,13 @@ import (
 )
 
 func main() {
+	//tronUrl := "https://api.shasta.trongrid.io/wallet/listwitnesses"
+	//req, _ := http.NewRequest("GET", tronUrl, nil)
+	//res, _ := http.DefaultClient.Do(req)
+	//defer res.Body.Close()
+	//body, _ := ioutil.ReadAll(res.Body)
+	//fmt.Println(string(body))
+
 	lis, err := net.Listen("tcp", "localhost:5051")
 	if err != nil {
 		log.Fatalf("Could not connect: %v", err)
@@ -29,4 +36,5 @@ func main() {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Could not serve: %v", err)
 	}
+
 }

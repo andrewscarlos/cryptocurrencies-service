@@ -34,7 +34,7 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Ass
 	assetModel.Name = req.GetName()
 	assetModel.Address = req.GetAddress()
 	assetModel.Blockchain = req.GetBlockchain()
-	assetModel.Value = float32(req.GetValue())
+	assetModel.Amount = float32(req.GetAmount())
 
 	errInputValidate := validateInputCreate(req)
 	if errInputValidate != nil {
@@ -48,7 +48,7 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Ass
 	return &pb.Asset{
 		Id:         assetModel.Id.Hex(),
 		Address:    assetModel.Address,
-		Value:      assetModel.Value,
+		Amount:     assetModel.Amount,
 		Name:       assetModel.Name,
 		Blockchain: assetModel.Blockchain,
 	}, nil
@@ -66,7 +66,7 @@ func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) 
 	return &pb.Asset{
 		Id:         result.Id.Hex(),
 		Address:    result.Address,
-		Value:      float32(result.Value),
+		Amount:     float32(result.Amount),
 		Name:       result.Name,
 		Blockchain: result.Blockchain,
 	}, nil
@@ -104,7 +104,7 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 
 	asset.Id = bson.ObjectIdHex(req.GetId())
 	asset.Address = req.GetAddress()
-	asset.Value = req.GetValue()
+	asset.Amount = req.GetAmount()
 	asset.Name = req.GetName()
 	asset.Blockchain = req.GetBlockchain()
 	err = s.AssetRepository.Update(asset)
@@ -114,21 +114,21 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	return &pb.Asset{
 		Id:         asset.Id.Hex(),
 		Address:    asset.Address,
-		Value:      float32(asset.Value),
+		Amount:     float32(asset.Amount),
 		Name:       asset.Name,
 		Blockchain: asset.Blockchain,
 	}, nil
 }
 
 func validateInputUpdate(req *pb.Asset) error {
-	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetValue() == 0 {
+	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetAmount() == 0 {
 		return util.ErrEmptyInput
 	}
 	return nil
 }
 
 func validateInputCreate(req *pb.CreateAsset) error {
-	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetValue() == 0 {
+	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetAmount() == 0 {
 		return util.ErrEmptyInput
 	}
 	return nil

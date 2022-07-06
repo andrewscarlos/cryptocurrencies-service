@@ -7,14 +7,14 @@ option go_package = ".;pb";
 message Asset {
   string Id = 1;
   string Address = 2;
-  float  Value = 3;
+  float  Amount = 3;
   string Name = 4;
   string Blockchain = 5;
 }
 
 message CreateAsset{
   string Address = 2;
-  float  Value = 3;
+  float  Amount = 3;
   string Name = 4;
   string Blockchain = 5;
 }

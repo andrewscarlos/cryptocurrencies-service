@@ -50,11 +50,11 @@ func TestAssetRepositoryAdapter_Read(t *testing.T) {
 
 	var asset entity.Asset
 	asset.Id = bson.NewObjectId()
-	asset.Value = 1.0
+	asset.Amount = 1.0
 	asset.Name = "foo"
 	asset.Address = "bar"
 	asset.Blockchain = "baz"
-	
+
 	persistence := mock_repository.NewMockAssetRepositoryInterface(ctrl)
 	persistence.EXPECT().Read(gomock.Any()).Return(&asset, nil)
 
