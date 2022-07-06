@@ -26,6 +26,7 @@ type AssetServiceClient interface {
 	Read(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Asset, error)
 	Delete(ctx context.Context, in *ID, opts ...grpc.CallOption) (*ID, error)
 	Update(ctx context.Context, in *Asset, opts ...grpc.CallOption) (*Asset, error)
+	StreamList(ctx context.Context, opts ...grpc.CallOption) (AssetService_StreamListClient, error)
 }
 
 type assetServiceClient struct {
@@ -72,6 +73,40 @@ func (c *assetServiceClient) Update(ctx context.Context, in *Asset, opts ...grpc
 	return out, nil
 }
 
+func (c *assetServiceClient) StreamList(ctx context.Context, opts ...grpc.CallOption) (AssetService_StreamListClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AssetService_ServiceDesc.Streams[0], "/pb.AssetService/StreamList", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &assetServiceStreamListClient{stream}
+	return x, nil
+}
+
+type AssetService_StreamListClient interface {
+	Send(*CreateAsset) error
+	CloseAndRecv() (*Assets, error)
+	grpc.ClientStream
+}
+
+type assetServiceStreamListClient struct {
+	grpc.ClientStream
+}
+
+func (x *assetServiceStreamListClient) Send(m *CreateAsset) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *assetServiceStreamListClient) CloseAndRecv() (*Assets, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(Assets)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // AssetServiceServer is the server API for AssetService service.
 // All implementations must embed UnimplementedAssetServiceServer
 // for forward compatibility
@@ -80,6 +115,7 @@ type AssetServiceServer interface {
 	Read(context.Context, *ID) (*Asset, error)
 	Delete(context.Context, *ID) (*ID, error)
 	Update(context.Context, *Asset) (*Asset, error)
+	StreamList(AssetService_StreamListServer) error
 	mustEmbedUnimplementedAssetServiceServer()
 }
 
@@ -98,6 +134,9 @@ func (UnimplementedAssetServiceServer) Delete(context.Context, *ID) (*ID, error)
 }
 func (UnimplementedAssetServiceServer) Update(context.Context, *Asset) (*Asset, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedAssetServiceServer) StreamList(AssetService_StreamListServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamList not implemented")
 }
 func (UnimplementedAssetServiceServer) mustEmbedUnimplementedAssetServiceServer() {}
 
@@ -184,6 +223,32 @@ func _AssetService_Update_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AssetService_StreamList_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(AssetServiceServer).StreamList(&assetServiceStreamListServer{stream})
+}
+
+type AssetService_StreamListServer interface {
+	SendAndClose(*Assets) error
+	Recv() (*CreateAsset, error)
+	grpc.ServerStream
+}
+
+type assetServiceStreamListServer struct {
+	grpc.ServerStream
+}
+
+func (x *assetServiceStreamListServer) SendAndClose(m *Assets) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *assetServiceStreamListServer) Recv() (*CreateAsset, error) {
+	m := new(CreateAsset)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // AssetService_ServiceDesc is the grpc.ServiceDesc for AssetService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -208,6 +273,12 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AssetService_Update_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamList",
+			Handler:       _AssetService_StreamList_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "asset.proto",
 }

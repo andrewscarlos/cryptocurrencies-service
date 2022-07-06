@@ -19,21 +19,23 @@ message CreateAsset{
   string Blockchain = 5;
 }
 
-
-message Assets {
-  repeated Asset asset = 1;
+message AssetsResultStream {
+  string Status = 1;
+  Asset asset = 2;
 }
 
 message ID {
   string id = 1;
 }
-
-
+message Assets {
+  repeated Asset assets = 1;
+}
 
 service AssetService {
   rpc Insert(CreateAsset) returns (Asset){};
   rpc Read(ID) returns (Asset){}
   rpc Delete(ID) returns (ID){}
   rpc Update(Asset) returns (Asset){}
+  rpc StreamList(stream CreateAsset) returns (Assets){}
 }
 

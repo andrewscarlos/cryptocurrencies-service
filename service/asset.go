@@ -7,6 +7,7 @@ import (
 	"cryptocurrencies-service/repository"
 	"cryptocurrencies-service/util"
 	"gopkg.in/mgo.v2/bson"
+	"io"
 )
 
 type AssetServiceInterface interface {
@@ -14,6 +15,7 @@ type AssetServiceInterface interface {
 	Read(req *pb.ID) (*pb.Asset, error)
 	Delete(req *pb.ID) (*pb.ID, error)
 	Update(req *pb.Asset) (*pb.Asset, error)
+	StreamList(stream pb.AssetService_StreamListServer) error
 }
 
 type AssetService struct {
@@ -118,6 +120,44 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 		Name:       asset.Name,
 		Blockchain: asset.Blockchain,
 	}, nil
+}
+
+func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error {
+	assets := []*pb.Asset{}
+	for {
+		assetRecived, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&pb.Assets{
+				Assets: assets,
+			})
+		}
+		errInputValidate := validateInputCreate(assetRecived)
+		if errInputValidate != nil {
+			return errInputValidate
+		}
+
+		var assetModel entity.Asset
+		assetModel.Id = bson.NewObjectId()
+		assetModel.Name = assetRecived.GetName()
+		assetModel.Address = assetRecived.GetAddress()
+		assetModel.Blockchain = assetRecived.GetBlockchain()
+		assetModel.Amount = float32(assetRecived.GetAmount())
+
+		err = s.AssetRepository.Insert(&assetModel)
+
+		if err != nil {
+			return util.ErrCreateFailed
+		}
+
+		assets = append(assets, &pb.Asset{
+			Id:         assetModel.Id.Hex(),
+			Address:    assetModel.Address,
+			Amount:     float32(assetModel.Amount),
+			Name:       assetModel.Name,
+			Blockchain: assetModel.Blockchain,
+		})
+
+	}
 }
 
 func validateInputUpdate(req *pb.Asset) error {
