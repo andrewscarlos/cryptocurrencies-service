@@ -9,7 +9,8 @@ import (
 	"testing"
 )
 
-func TestAssetService_Insert(t *testing.T) {
+
+func TestAssetServiceInsert(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	var req pb.CreateAsset
@@ -34,7 +35,7 @@ func TestAssetService_Insert(t *testing.T) {
 	require.Equal(t, &res, result)
 }
 
-func TestAssetService_Insert_WhenReturnError(t *testing.T) {
+func TestAssetServiceInsertWhenReturnError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	var res pb.Asset
@@ -45,7 +46,7 @@ func TestAssetService_Insert_WhenReturnError(t *testing.T) {
 	require.Equal(t, "asset created failed", err.Error())
 }
 
-func TestAssetService_Delete_AllCases(t *testing.T) {
+func TestAssetServiceDeleteAllCases(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	var id pb.ID
@@ -68,7 +69,7 @@ func TestAssetService_Delete_AllCases(t *testing.T) {
 
 }
 
-func TestAssetService_Read(t *testing.T) {
+func TestAssetServiceRead(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	var id pb.ID
@@ -93,7 +94,7 @@ func TestAssetService_Read(t *testing.T) {
 
 }
 
-func TestAssetService_Update(t *testing.T) {
+func TestAssetServiceUpdate(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	var req pb.Asset

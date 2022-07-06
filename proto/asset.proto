@@ -27,7 +27,8 @@ message AssetResultStream {
 message Assets {
   repeated Asset asset = 1;
 }
-message ID{
+
+message ID {
   string id = 1;
 }
 

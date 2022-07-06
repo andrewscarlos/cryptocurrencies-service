@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestAssetAdapterRepository_Insert(t *testing.T) {
+func TestAssetAdapterRepositorInsert(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -29,7 +29,7 @@ func TestAssetAdapterRepository_Insert(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestAssetRepositoryAdapter_Delete(t *testing.T) {
+func TestAssetRepositoryAdapterDelete(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

@@ -87,6 +87,11 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	if IsObjectIdHex == false {
 		return nil, util.ErrInvalidObjectId
 	}
+	errInputValidate := validateInput(req)
+	if errInputValidate != nil {
+		return nil, errInputValidate
+	}
+
 	asset, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
 		return nil, util.ErrNotFound
@@ -108,4 +113,11 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 		Name:       asset.Name,
 		Blockchain: asset.Blockchain,
 	}, nil
+}
+
+func validateInput(req *pb.Asset) error {
+	if req.GetAddress() == "" || req.GetName() == "" || req.GetBlockchain() == "" || req.GetValue() == 0 {
+		return util.ErrEmptyInput
+	}
+	return nil
 }

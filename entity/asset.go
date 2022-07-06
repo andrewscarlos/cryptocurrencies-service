@@ -9,3 +9,4 @@ type Asset struct {
 	Name       string        `json:"name" bson:"name"`
 	Blockchain string        `json:"blockchain" bson:"blockchain"`
 }
+//TODO change value to amount

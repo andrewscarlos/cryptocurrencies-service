@@ -9,4 +9,5 @@ var (
 	ErrDeleteFailed    = errors.New("asset deleted failed")
 	ErrUnauthorized    = errors.New("Unauthorized")
 	ErrInvalidObjectId = errors.New("invalid objectId")
+	ErrEmptyInput      = errors.New("empty input")
 )
