@@ -35,4 +35,9 @@ $ go run cmd/server/main.go
 
 $ grpcui -plaintext localhost:5051
 
+or
+
+$ make server
+
+$ make grpcui 
 ```

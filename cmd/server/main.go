@@ -42,7 +42,3 @@ func main() {
 	}
 
 }
-
-//func getUrl() string {
-//	return fmt.Sprintf(os.Getenv("GRPC_HOST"),os.Getenv("GRPC_PORT"))
-//}
