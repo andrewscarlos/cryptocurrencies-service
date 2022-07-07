@@ -1,8 +1,10 @@
 package db
 
 import (
+	"github.com/joho/godotenv"
 	"gopkg.in/mgo.v2"
 	"log"
+	"os"
 )
 
 type Connection interface {
@@ -17,8 +19,13 @@ type conn struct {
 func NewConnection() Connection {
 	var c conn
 	var err error
-	url := "mongodb://localhost:27017"
-	c.session, err = mgo.Dial(url)
+
+	envError := godotenv.Load(".env")
+	if envError != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	c.session, err = mgo.Dial(os.Getenv("MONGO_URI"))
 	if err != nil {
 		log.Panicln(err.Error())
 	}

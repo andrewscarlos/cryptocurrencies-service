@@ -5,15 +5,21 @@ import (
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
 	"cryptocurrencies-service/service"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"os"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	lis, err := net.Listen("tcp", "localhost:5051")
+	lis, err := net.Listen("tcp", os.Getenv("GRPC_HOST"))
 	if err != nil {
 		log.Fatalf("Could not connect: %v", err)
 	}
@@ -32,3 +38,7 @@ func main() {
 	}
 
 }
+
+//func getUrl() string {
+//	return fmt.Sprintf(os.Getenv("GRPC_HOST"),os.Getenv("GRPC_PORT"))
+//}

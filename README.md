@@ -23,6 +23,8 @@
 ## Installation
 
 ```bash
+$ cp example.env .env
+
 $ go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
 ```
 
