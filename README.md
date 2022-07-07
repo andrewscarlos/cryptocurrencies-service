@@ -15,7 +15,10 @@
 * The API have a method that stream a live update of the current sum of the votes from a given Cryptocurrency
 
 
-### Installation
+
+
+
+## Installation
 
 
 * need to have mangodb installed
