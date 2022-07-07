@@ -7,7 +7,6 @@ var (
 	ErrCreateFailed    = errors.New("asset created failed")
 	ErrUpdateFailed    = errors.New("asset updated failed")
 	ErrDeleteFailed    = errors.New("asset deleted failed")
-	ErrUnauthorized    = errors.New("Unauthorized")
 	ErrInvalidObjectId = errors.New("invalid objectId")
 	ErrEmptyInput      = errors.New("empty input name or blockchain or amount or address")
 )
