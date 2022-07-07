@@ -5,6 +5,7 @@ import (
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
 	"cryptocurrencies-service/service"
+	"cryptocurrencies-service/util"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -25,7 +26,10 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 
-	dbConn := db.NewConnection()
+	dbConn, err := db.NewConnection()
+	if err != nil {
+		log.Fatalf(util.ErrNotConnecInDatabase.Error())
+	}
 	defer dbConn.Close()
 
 	assetMongoRepository := repository.NewAssetRepository(dbConn)

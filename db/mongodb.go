@@ -1,6 +1,7 @@
 package db
 
 import (
+	"cryptocurrencies-service/util"
 	"github.com/joho/godotenv"
 	"gopkg.in/mgo.v2"
 	"log"
@@ -16,7 +17,7 @@ type conn struct {
 	session *mgo.Session
 }
 
-func NewConnection() Connection {
+func NewConnection() (Connection, error) {
 	var c conn
 	var err error
 
@@ -27,9 +28,9 @@ func NewConnection() Connection {
 
 	c.session, err = mgo.Dial(os.Getenv("MONGO_URI"))
 	if err != nil {
-		log.Panicln(err.Error())
+		return nil, util.ErrNotConnecInDatabase
 	}
-	return &c
+	return &c, nil
 }
 
 func (c *conn) Close() {
