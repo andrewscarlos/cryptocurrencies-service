@@ -134,3 +134,35 @@ func TestAssetServiceUpdate(t *testing.T) {
 	require.Equal(t, "empty input name or blockchain or amount or address", err.Error())
 
 }
+
+func TestAssetStreamList(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	var req pb.AssetService_StreamListServer
+
+	services := mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().StreamList(gomock.Any()).Return(nil)
+	err := services.StreamList(req)
+	require.Nil(t, err)
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().StreamList(gomock.Any()).Return(util.ErrInvalidObjectId)
+	err = services.StreamList(req)
+	require.Equal(t, "invalid objectId", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().StreamList(gomock.Any()).Return(util.ErrInvalidObjectId)
+	err = services.StreamList(req)
+	require.Equal(t, "invalid objectId", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().StreamList(gomock.Any()).Return(util.ErrEmptyInput)
+	err = services.StreamList(req)
+	require.Equal(t, "empty input name or blockchain or amount or address", err.Error())
+
+	services = mock_service.NewMockAssetServiceInterface(ctrl)
+	services.EXPECT().StreamList(gomock.Any()).Return(util.ErrCreateFailed)
+	err = services.StreamList(req)
+	require.Equal(t, "asset created failed", err.Error())
+
+}

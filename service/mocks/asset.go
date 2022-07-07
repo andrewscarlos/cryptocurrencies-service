@@ -79,6 +79,20 @@ func (mr *MockAssetServiceInterfaceMockRecorder) Read(req interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockAssetServiceInterface)(nil).Read), req)
 }
 
+// StreamList mocks base method.
+func (m *MockAssetServiceInterface) StreamList(stream pb.AssetService_StreamListServer) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StreamList", stream)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// StreamList indicates an expected call of StreamList.
+func (mr *MockAssetServiceInterfaceMockRecorder) StreamList(stream interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StreamList", reflect.TypeOf((*MockAssetServiceInterface)(nil).StreamList), stream)
+}
+
 // Update mocks base method.
 func (m *MockAssetServiceInterface) Update(req *pb.Asset) (*pb.Asset, error) {
 	m.ctrl.T.Helper()

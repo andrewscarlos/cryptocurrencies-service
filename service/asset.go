@@ -133,7 +133,7 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 		}
 		errInputValidate := validateInputCreate(assetRecived)
 		if errInputValidate != nil {
-			return errInputValidate
+			return util.ErrEmptyInput
 		}
 
 		var assetModel entity.Asset
@@ -156,6 +156,7 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 			Name:       assetModel.Name,
 			Blockchain: assetModel.Blockchain,
 		})
+		return nil
 
 	}
 }
