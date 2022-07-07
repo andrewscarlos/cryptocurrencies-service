@@ -156,7 +156,6 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 			Name:       assetModel.Name,
 			Blockchain: assetModel.Blockchain,
 		})
-		return nil
 
 	}
 }

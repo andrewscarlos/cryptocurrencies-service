@@ -141,13 +141,8 @@ func TestAssetStreamList(t *testing.T) {
 	var req pb.AssetService_StreamListServer
 
 	services := mock_service.NewMockAssetServiceInterface(ctrl)
-	services.EXPECT().StreamList(gomock.Any()).Return(nil)
-	err := services.StreamList(req)
-	require.Nil(t, err)
-
-	services = mock_service.NewMockAssetServiceInterface(ctrl)
 	services.EXPECT().StreamList(gomock.Any()).Return(util.ErrInvalidObjectId)
-	err = services.StreamList(req)
+	err := services.StreamList(req)
 	require.Equal(t, "invalid objectId", err.Error())
 
 	services = mock_service.NewMockAssetServiceInterface(ctrl)
