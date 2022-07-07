@@ -1,6 +1,6 @@
 # Cryptocurrencies-service
 
-## The Technical Challenge consists of creating an API with Golang using gRPC with stream pipes that exposes an Upvote service endpoints. The API will provide the user an interface to upvote or downvote a known list of the main Cryptocurrencies (Bitcoin, ethereum, litecoin, etc..).
+#### The Technical Challenge consists of creating an API with Golang using gRPC with stream pipes that exposes an Upvote service endpoints. The API will provide the user an interface to upvote or downvote a known list of the main Cryptocurrencies (Bitcoin, ethereum, litecoin, etc..).
 ## Technical requirements:
 
 * Keep the code in Github
@@ -13,3 +13,21 @@
 
 * Deliver the whole solution running in some free cloud service
 * The API have a method that stream a live update of the current sum of the votes from a given Cryptocurrency
+
+
+### Installation
+
+
+* need to have mangodb installed
+
+```bash
+$ go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
+```
+
+### Running the app
+```bash
+$ go run cmd/server/main.go
+
+$ grpcui -plaintext localhost:5051
+
+```
