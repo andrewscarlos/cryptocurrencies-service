@@ -50,6 +50,7 @@ func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Ass
 	if err != nil {
 		return nil, util.ErrCreateFailed
 	}
+	s.Cache.Set(assetModel.Id.Hex(), assetModel)
 	return &pb.Asset{
 		Id:         assetModel.Id.Hex(),
 		Address:    assetModel.Address,
@@ -63,6 +64,17 @@ func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) 
 	IsObjectIdHex := bson.IsObjectIdHex(req.GetId())
 	if IsObjectIdHex == false {
 		return nil, util.ErrInvalidObjectId
+	}
+	assetCache, err := s.Cache.Get(req.GetId())
+	if err == nil {
+		assetReturn := &pb.Asset{
+			Id:         assetCache.Id.Hex(),
+			Address:    assetCache.Address,
+			Amount:     float32(assetCache.Amount),
+			Name:       assetCache.Name,
+			Blockchain: assetCache.Blockchain,
+		}
+		return assetReturn, nil
 	}
 	result, err := s.AssetRepository.Read(req.GetId())
 	if err != nil {
@@ -87,6 +99,7 @@ func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
 	if err != nil {
 		return nil, util.ErrDeleteFailed
 	}
+	s.Cache.Delete(req.Id)
 	return &pb.ID{
 		Id: req.GetId(),
 	}, nil
@@ -117,6 +130,13 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	if err != nil {
 		return nil, util.ErrUpdateFailed
 	}
+	s.Cache.Set(asset.Id.Hex(), entity.Asset{
+		Id:         asset.Id,
+		Address:    asset.Address,
+		Amount:     asset.Amount,
+		Name:       asset.Name,
+		Blockchain: asset.Blockchain,
+	})
 
 	return &pb.Asset{
 		Id:         asset.Id.Hex(),
@@ -143,19 +163,20 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 			})
 		}
 
-		var assetModel entity.Asset
-		assetModel.Id = bson.NewObjectId()
-		assetModel.Name = assetRecived.GetName()
-		assetModel.Address = assetRecived.GetAddress()
-		assetModel.Blockchain = assetRecived.GetBlockchain()
-		assetModel.Amount = float32(assetRecived.GetAmount())
+		assetModel := entity.Asset{
+			Id:         bson.NewObjectId(),
+			Name:       assetRecived.GetName(),
+			Address:    assetRecived.GetAddress(),
+			Blockchain: assetRecived.GetBlockchain(),
+			Amount:     float32(assetRecived.GetAmount()),
+		}
 
 		err = s.AssetRepository.Insert(&assetModel)
 
 		if err != nil {
 			return util.ErrCreateFailed
 		}
-
+		s.Cache.Set(assetModel.Id.Hex(), assetModel)
 		assets = append(assets, &pb.Asset{
 			Id:         assetModel.Id.Hex(),
 			Address:    assetModel.Address,

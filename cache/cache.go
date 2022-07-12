@@ -1,11 +1,13 @@
 package cache
 
+import "cryptocurrencies-service/entity"
+
 type Key string
 type Value interface{}
 
 type CacheInterface interface {
-	Get(key string) (interface{}, error)
-	Set(key string, value interface{}) error
+	Get(key string) (entity.Asset, error)
+	Set(key string, value entity.Asset) error
 	Delete(key string) error
 }
 
@@ -19,11 +21,11 @@ type Cache struct {
 	CatcherPersistence CacheInterface
 }
 
-func (c *Cache) Get(key string) (interface{}, error) {
+func (c *Cache) Get(key string) (entity.Asset, error) {
 	return c.CatcherPersistence.Get(key)
 }
 
-func (c *Cache) Set(key string, value interface{}) error {
+func (c *Cache) Set(key string, value entity.Asset) error {
 	return c.CatcherPersistence.Set(key, value)
 }
 
