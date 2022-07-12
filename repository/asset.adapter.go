@@ -7,6 +7,7 @@ type AssetRepositoryInterface interface {
 	Read(id string) (asset *entity.Asset, err error)
 	Delete(id string) error
 	Update(asset *entity.Asset) error
+	GetAll() ([]*entity.Asset, error)
 }
 
 type AssetRepositoryAdapter struct {
@@ -30,4 +31,8 @@ func (assetAdaper *AssetRepositoryAdapter) Delete(id string) error {
 }
 func (assetAdaper *AssetRepositoryAdapter) Update(asset *entity.Asset) error {
 	return assetAdaper.Persister.Update(asset)
+}
+
+func (assetAdaper *AssetRepositoryAdapter) GetAll() ([]*entity.Asset, error) {
+	return assetAdaper.Persister.GetAll()
 }

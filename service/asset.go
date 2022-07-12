@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"cryptocurrencies-service/cache"
 	"cryptocurrencies-service/entity"
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
@@ -16,31 +17,33 @@ type AssetServiceInterface interface {
 	Delete(req *pb.ID) (*pb.ID, error)
 	Update(req *pb.Asset) (*pb.Asset, error)
 	StreamList(stream pb.AssetService_StreamListServer) error
+	GetAll(void *pb.Void) (*pb.Assets, error)
 }
 
 type AssetService struct {
 	pb.UnimplementedAssetServiceServer
 	AssetRepository repository.AssetRepositoryInterface
+	Cache           cache.CacheInterface
 }
 
-func NewAssetService(assetRepository repository.AssetRepositoryInterface) *AssetService {
+func NewAssetService(assetRepository repository.AssetRepositoryInterface, cache cache.CacheInterface) *AssetService {
 	return &AssetService{
-
 		AssetRepository: assetRepository,
+		Cache:           cache,
 	}
 }
 
 func (s *AssetService) Insert(ctx context.Context, req *pb.CreateAsset) (*pb.Asset, error) {
-	var assetModel entity.Asset
-	assetModel.Id = bson.NewObjectId()
-	assetModel.Name = req.GetName()
-	assetModel.Address = req.GetAddress()
-	assetModel.Blockchain = req.GetBlockchain()
-	assetModel.Amount = float32(req.GetAmount())
-
 	errInputValidate := validateInputCreate(req)
 	if errInputValidate != nil {
 		return nil, errInputValidate
+	}
+	assetModel := entity.Asset{
+		Id:         bson.NewObjectId(),
+		Name:       req.GetName(),
+		Address:    req.GetAddress(),
+		Blockchain: req.GetBlockchain(),
+		Amount:     float32(req.GetAmount()),
 	}
 
 	err := s.AssetRepository.Insert(&assetModel)
@@ -110,9 +113,11 @@ func (s *AssetService) Update(ctx context.Context, req *pb.Asset) (*pb.Asset, er
 	asset.Name = req.GetName()
 	asset.Blockchain = req.GetBlockchain()
 	err = s.AssetRepository.Update(asset)
+
 	if err != nil {
 		return nil, util.ErrUpdateFailed
 	}
+
 	return &pb.Asset{
 		Id:         asset.Id.Hex(),
 		Address:    asset.Address,
@@ -126,14 +131,16 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 	assets := []*pb.Asset{}
 	for {
 		assetRecived, err := stream.Recv()
+
+		errInputValidate := validateInputCreate(assetRecived)
+		if errInputValidate != nil {
+			return util.ErrEmptyInput
+		}
+
 		if err == io.EOF {
 			return stream.SendAndClose(&pb.Assets{
 				Assets: assets,
 			})
-		}
-		errInputValidate := validateInputCreate(assetRecived)
-		if errInputValidate != nil {
-			return util.ErrEmptyInput
 		}
 
 		var assetModel entity.Asset
@@ -158,6 +165,27 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 		})
 
 	}
+}
+
+func (s *AssetService) GetAll(ctx context.Context, void *pb.Void) (*pb.Assets, error) {
+	getAllassets, err := s.AssetRepository.GetAll()
+	if err != nil {
+		return nil, util.ErrEmptyAssetList
+	}
+	var assetList []*pb.Asset
+
+	for _, asset := range getAllassets {
+		assetList = append(assetList, &pb.Asset{
+			Id:         asset.Id.Hex(),
+			Address:    asset.Address,
+			Amount:     float32(asset.Amount),
+			Name:       asset.Name,
+			Blockchain: asset.Blockchain,
+		})
+	}
+	return &pb.Assets{
+		Assets: assetList,
+	}, nil
 }
 
 func validateInputUpdate(req *pb.Asset) error {

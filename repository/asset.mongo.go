@@ -33,3 +33,9 @@ func (r *AssetRepository) Delete(id string) error {
 func (r *AssetRepository) Update(asset *entity.Asset) error {
 	return r.c.UpdateId(asset.Id, asset)
 }
+
+func (r *AssetRepository) GetAll() ([]*entity.Asset, error) {
+	var assets []*entity.Asset
+	err := r.c.Find(nil).All(&assets)
+	return assets, err
+}

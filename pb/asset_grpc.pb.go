@@ -27,6 +27,7 @@ type AssetServiceClient interface {
 	Delete(ctx context.Context, in *ID, opts ...grpc.CallOption) (*ID, error)
 	Update(ctx context.Context, in *Asset, opts ...grpc.CallOption) (*Asset, error)
 	StreamList(ctx context.Context, opts ...grpc.CallOption) (AssetService_StreamListClient, error)
+	GetAll(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Assets, error)
 }
 
 type assetServiceClient struct {
@@ -107,6 +108,15 @@ func (x *assetServiceStreamListClient) CloseAndRecv() (*Assets, error) {
 	return m, nil
 }
 
+func (c *assetServiceClient) GetAll(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Assets, error) {
+	out := new(Assets)
+	err := c.cc.Invoke(ctx, "/pb.AssetService/GetAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AssetServiceServer is the server API for AssetService service.
 // All implementations must embed UnimplementedAssetServiceServer
 // for forward compatibility
@@ -116,6 +126,7 @@ type AssetServiceServer interface {
 	Delete(context.Context, *ID) (*ID, error)
 	Update(context.Context, *Asset) (*Asset, error)
 	StreamList(AssetService_StreamListServer) error
+	GetAll(context.Context, *Void) (*Assets, error)
 	mustEmbedUnimplementedAssetServiceServer()
 }
 
@@ -137,6 +148,9 @@ func (UnimplementedAssetServiceServer) Update(context.Context, *Asset) (*Asset, 
 }
 func (UnimplementedAssetServiceServer) StreamList(AssetService_StreamListServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamList not implemented")
+}
+func (UnimplementedAssetServiceServer) GetAll(context.Context, *Void) (*Assets, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedAssetServiceServer) mustEmbedUnimplementedAssetServiceServer() {}
 
@@ -249,6 +263,24 @@ func (x *assetServiceStreamListServer) Recv() (*CreateAsset, error) {
 	return m, nil
 }
 
+func _AssetService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Void)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AssetServiceServer).GetAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.AssetService/GetAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AssetServiceServer).GetAll(ctx, req.(*Void))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AssetService_ServiceDesc is the grpc.ServiceDesc for AssetService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -271,6 +303,10 @@ var AssetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _AssetService_Update_Handler,
+		},
+		{
+			MethodName: "GetAll",
+			Handler:    _AssetService_GetAll_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

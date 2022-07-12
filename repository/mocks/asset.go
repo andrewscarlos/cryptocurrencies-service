@@ -5,7 +5,7 @@
 package mock_repository
 
 import (
-	model "cryptocurrencies-service/entity"
+	entity "cryptocurrencies-service/entity"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -48,8 +48,23 @@ func (mr *MockAssetRepositoryInterfaceMockRecorder) Delete(id interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockAssetRepositoryInterface)(nil).Delete), id)
 }
 
+// GetAll mocks base method.
+func (m *MockAssetRepositoryInterface) GetAll() ([]*entity.Asset, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAll")
+	ret0, _ := ret[0].([]*entity.Asset)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAll indicates an expected call of GetAll.
+func (mr *MockAssetRepositoryInterfaceMockRecorder) GetAll() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockAssetRepositoryInterface)(nil).GetAll))
+}
+
 // Insert mocks base method.
-func (m *MockAssetRepositoryInterface) Insert(asset *model.Asset) error {
+func (m *MockAssetRepositoryInterface) Insert(asset *entity.Asset) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", asset)
 	ret0, _ := ret[0].(error)
@@ -63,10 +78,10 @@ func (mr *MockAssetRepositoryInterfaceMockRecorder) Insert(asset interface{}) *g
 }
 
 // Read mocks base method.
-func (m *MockAssetRepositoryInterface) Read(id string) (*model.Asset, error) {
+func (m *MockAssetRepositoryInterface) Read(id string) (*entity.Asset, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", id)
-	ret0, _ := ret[0].(*model.Asset)
+	ret0, _ := ret[0].(*entity.Asset)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -78,7 +93,7 @@ func (mr *MockAssetRepositoryInterfaceMockRecorder) Read(id interface{}) *gomock
 }
 
 // Update mocks base method.
-func (m *MockAssetRepositoryInterface) Update(asset *model.Asset) error {
+func (m *MockAssetRepositoryInterface) Update(asset *entity.Asset) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", asset)
 	ret0, _ := ret[0].(error)

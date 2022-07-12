@@ -30,6 +30,8 @@ message ID {
 message Assets {
   repeated Asset assets = 1;
 }
+message Void{
+}
 
 service AssetService {
   rpc Insert(CreateAsset) returns (Asset){};
@@ -37,5 +39,6 @@ service AssetService {
   rpc Delete(ID) returns (ID){}
   rpc Update(Asset) returns (Asset){}
   rpc StreamList(stream CreateAsset) returns (Assets){}
+  rpc GetAll(Void) returns (Assets){}
 }
 

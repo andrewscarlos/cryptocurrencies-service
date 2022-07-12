@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cryptocurrencies-service/cache"
 	"cryptocurrencies-service/db"
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
@@ -34,8 +35,9 @@ func main() {
 
 	assetMongoRepository := repository.NewAssetRepository(dbConn)
 	assetRepository := repository.NewAssetRepositoryAdapter(assetMongoRepository)
-
-	pb.RegisterAssetServiceServer(grpcServer, service.NewAssetService(assetRepository))
+	cacheDev := cache.NewCacheDev()
+	cache := cache.NewCache(cacheDev)
+	pb.RegisterAssetServiceServer(grpcServer, service.NewAssetService(assetRepository, cache))
 	reflection.Register(grpcServer)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Could not serve: %v", err)
