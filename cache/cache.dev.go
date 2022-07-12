@@ -1,6 +1,9 @@
 package cache
 
-import "cryptocurrencies-service/entity"
+import (
+	"cryptocurrencies-service/entity"
+	"errors"
+)
 
 type CacheDev struct {
 }
@@ -12,7 +15,11 @@ func NewCacheDev() CacheInterface {
 }
 
 func (c *CacheDev) Get(key string) (entity.Asset, error) {
-	return CacheList[key], nil
+	item, ok := CacheList[key]
+	if !ok {
+		return entity.Asset{}, errors.New("item not found")
+	}
+	return item, nil
 }
 func (c *CacheDev) Set(k string, v entity.Asset) error {
 	CacheList[k] = v

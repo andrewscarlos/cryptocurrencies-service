@@ -9,6 +9,7 @@ import (
 	"cryptocurrencies-service/util"
 	"gopkg.in/mgo.v2/bson"
 	"io"
+	"log"
 )
 
 type AssetServiceInterface interface {
@@ -80,6 +81,11 @@ func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) 
 	if err != nil {
 		return nil, util.ErrNotFound
 	}
+	err = s.addAssetToCacheIfNotExists(result)
+	if err != nil {
+		log.Println(err)
+	}
+
 	return &pb.Asset{
 		Id:         result.Id.Hex(),
 		Address:    result.Address,
@@ -87,7 +93,6 @@ func (s *AssetService) Read(ctx context.Context, req *pb.ID) (*pb.Asset, error) 
 		Name:       result.Name,
 		Blockchain: result.Blockchain,
 	}, nil
-
 }
 
 func (s *AssetService) Delete(ctx context.Context, req *pb.ID) (*pb.ID, error) {
@@ -184,7 +189,6 @@ func (s *AssetService) StreamList(stream pb.AssetService_StreamListServer) error
 			Name:       assetModel.Name,
 			Blockchain: assetModel.Blockchain,
 		})
-
 	}
 }
 
@@ -221,4 +225,14 @@ func validateInputCreate(req *pb.CreateAsset) error {
 		return util.ErrEmptyInput
 	}
 	return nil
+}
+
+func (s *AssetService) addAssetToCacheIfNotExists(asset *entity.Asset) error {
+	return s.Cache.Set(asset.Id.Hex(), entity.Asset{
+		Id:         asset.Id,
+		Address:    asset.Address,
+		Amount:     float32(asset.Amount),
+		Name:       asset.Name,
+		Blockchain: asset.Blockchain,
+	})
 }

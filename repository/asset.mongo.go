@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"cryptocurrencies-service/db"
+	"cryptocurrencies-service/config"
 	"cryptocurrencies-service/entity"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -13,7 +13,7 @@ type AssetRepository struct {
 	c *mgo.Collection
 }
 
-func NewAssetRepository(conn db.Connection) AssetRepositoryInterface {
+func NewAssetRepository(conn config.Connection) AssetRepositoryInterface {
 	return &AssetRepository{conn.DB().C(AssetCollection)}
 }
 

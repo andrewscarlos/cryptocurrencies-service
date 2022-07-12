@@ -12,19 +12,19 @@ import (
 func TestCacheSetAndGet(t *testing.T) {
 	cachedev := cache.NewCacheDev()
 	cache := cache.NewCache(cachedev)
-	assetModel := entity.Asset{
+	asset := entity.Asset{
 		Id:         bson.NewObjectId(),
 		Name:       "John Doe Coin",
 		Address:    "foo",
 		Blockchain: "bar",
 		Amount:     1.0,
 	}
-	err := cache.Set("foo", assetModel)
+	err := cache.Set("foo", asset)
 	require.Nil(t, err)
 
-	asset, err := cache.Get("foo")
+	assetCached, err := cache.Get("foo")
 	require.Nil(t, err)
-	assert.Equal(t, assetModel, asset)
+	assert.Equal(t, asset, assetCached)
 }
 
 func TestCacheDelete(t *testing.T) {

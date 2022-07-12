@@ -1,8 +1,9 @@
 package main
 
 import (
+	"context"
 	"cryptocurrencies-service/cache"
-	"cryptocurrencies-service/db"
+	"cryptocurrencies-service/config"
 	"cryptocurrencies-service/pb"
 	"cryptocurrencies-service/repository"
 	"cryptocurrencies-service/service"
@@ -27,7 +28,7 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 
-	dbConn, err := db.NewConnection()
+	dbConn, err := config.NewConnection()
 	if err != nil {
 		log.Fatalf(util.ErrNotConnecInDatabase.Error())
 	}
@@ -35,8 +36,8 @@ func main() {
 
 	assetMongoRepository := repository.NewAssetRepository(dbConn)
 	assetRepository := repository.NewAssetRepositoryAdapter(assetMongoRepository)
-	cacheDev := cache.NewCacheDev()
-	cache := cache.NewCache(cacheDev)
+	cacheRedis := cache.NewCacheRedis(context.Background())
+	cache := cache.NewCache(cacheRedis)
 	pb.RegisterAssetServiceServer(grpcServer, service.NewAssetService(assetRepository, cache))
 	reflection.Register(grpcServer)
 	if err := grpcServer.Serve(lis); err != nil {
