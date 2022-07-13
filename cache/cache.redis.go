@@ -5,7 +5,6 @@ import (
 	"cryptocurrencies-service/config"
 	"cryptocurrencies-service/entity"
 	"encoding/json"
-	"fmt"
 	"github.com/go-redis/redis"
 )
 
@@ -31,12 +30,10 @@ func (c *RedisCache) Get(key string) (entity.Asset, error) {
 	if err != nil {
 		return entity.Asset{}, err
 	}
-	fmt.Println("Key", key, "Value", &asset)
 	return asset, nil
 }
 
 func (c *RedisCache) Set(k string, v entity.Asset) error {
-	fmt.Println("Key", k, "Value", v)
 	val, err := json.Marshal(v)
 	if err != nil {
 		return err
