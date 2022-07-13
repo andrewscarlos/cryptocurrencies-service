@@ -19,6 +19,7 @@
 ## Requirements
 
 * MongoDb database
+* Redis 
 
 ## Installation
 
